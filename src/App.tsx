@@ -2,12 +2,15 @@ import { Button, Flex, Stack } from '@chakra-ui/react';
 import _ from 'lodash';
 import React, { useState } from 'react';
 import GithubCorner from 'react-github-corner';
+import store from 'store';
 import VPNConfigCard from './components/card/VPNConfigCard';
 import FilePicker from './components/FilePicker';
 import GridLayout from './components/layout/GridLayout';
 import Credentials from './components/modals/Credentials';
 import useRenderRefresher from './hooks/useRenderRefresher';
+import { CREDENTIALS } from './utils/constant/global';
 import Storage from './utils/storage';
+import VPN from './utils/vpn';
 
 const App = () => {
   const refreshRender = useRenderRefresher();
@@ -30,6 +33,14 @@ const App = () => {
   const onCredentialClose = () => setIsCredentialOpen(false);
   const onCredentialOpen = () => setIsCredentialOpen(true);
 
+  const onClickOnCards = (config: VPNConfig) => () => {
+    const credentials = store.get(CREDENTIALS.CREDENTIALS);
+
+    if (!credentials) return;
+
+    VPN.instance.connect(config.path, JSON.parse(credentials));
+  };
+
   return (
     <Flex
       width={'100vw'}
@@ -49,7 +60,7 @@ const App = () => {
       </Stack>
       <GridLayout>
         {_.map(Storage.instance.storage, (value, key) => (
-          <VPNConfigCard config={value} key={key} />
+          <VPNConfigCard config={value} key={key} onClick={onClickOnCards(value)} />
         ))}
       </GridLayout>
       <Credentials isOpen={isCredentialOpen} onClose={onCredentialClose} />
