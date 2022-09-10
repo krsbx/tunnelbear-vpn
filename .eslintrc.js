@@ -29,6 +29,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'prettier/prettier': 'off',
     'class-methods-use-this': 'off',
+    'no-use-before-define': 'off',
   },
   settings: {},
 };
