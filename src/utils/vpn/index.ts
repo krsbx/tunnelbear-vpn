@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import _ from 'lodash';
 import * as openvpnbin from './bin';
 import * as openvpnmanager from './openvpn';
@@ -31,11 +30,10 @@ class VPN {
         if (_.isBoolean(managerInstance)) return;
 
         managerInstance.on('connected', () => {
-          if (managerInstance instanceof EventEmitter)
-            openvpnmanager.authorize({
-              user: credentials.username,
-              pass: credentials.password,
-            });
+          openvpnmanager.authorize({
+            user: credentials.username,
+            pass: credentials.password,
+          });
         });
 
         managerInstance.on('console-output', (output: AnyRecord) => {

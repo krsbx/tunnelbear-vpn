@@ -29,6 +29,7 @@ const Confirmations = ({ isOpen, onClose, onOpen }: Props) => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors, touchedFields: touched, isSubmitting },
   } = useForm({
     resolver: zodResolver(
@@ -41,25 +42,26 @@ const Confirmations = ({ isOpen, onClose, onOpen }: Props) => {
   const onSubmit = (values: { password: string }) => {
     const password = store.get(CREDENTIALS.CONFIRMATION);
 
-    if (password && password === values.password) {
+    if (!password) {
+      reset();
       onOpen();
       onClose();
-
       return;
     }
 
-    if (!password) {
-      onOpen();
-      onClose();
-    }
+    if (password !== values.password) return;
+
+    reset();
+    onOpen();
+    onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay>
-        <ModalContent>
+        <ModalContent p={3}>
           <ModalHeader>
-            <Text>Your confirmation required</Text>
+            <Text textAlign={'center'}>Your confirmation required</Text>
           </ModalHeader>
           <ModalBody>
             <Form onSubmit={handleSubmit(onSubmit)}>

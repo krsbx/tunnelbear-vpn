@@ -50,8 +50,8 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
   const {
     handleSubmit,
     register,
-    formState: { errors, touchedFields: touched, isSubmitting },
     setValue,
+    formState: { errors, touchedFields: touched, isSubmitting },
   } = useForm({
     resolver: zodResolver(
       z.object({
@@ -62,6 +62,8 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
   });
 
   const onClose = () => {
+    setValue('password', '');
+
     onConfirmationClose();
     onCloseFromProps();
     onCreateConfirmationClose();
@@ -77,18 +79,30 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
       return;
     }
 
-    onCredentialClose();
+    onClose();
+  };
+
+  const onConfirmationSubmit = () => {
+    const credentials = store.get(CREDENTIALS.CREDENTIALS);
+
+    if (credentials) {
+      const username = JSON.parse(credentials)?.username;
+
+      if (username) setValue('username', username);
+    }
+
+    onCredentialOpen();
   };
 
   useEffect(() => {
     if (!isOpen) return;
 
-    if (store.get(CREDENTIALS.CREDENTIALS) && store.get(CREDENTIALS.CONFIRMATION)) {
+    const credentials = store.get(CREDENTIALS.CREDENTIALS);
+
+    if (credentials && store.get(CREDENTIALS.CONFIRMATION)) {
       onConfirmationOpen();
       return;
     }
-
-    const credentials = store.get(CREDENTIALS.CREDENTIALS);
 
     if (credentials) {
       const username = JSON.parse(credentials)?.username;
@@ -101,9 +115,9 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
 
   return (
     <>
-      <Modal isOpen={credentialIsOpen} onClose={onClose}>
+      <Modal isOpen={credentialIsOpen} onClose={onClose} isCentered>
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent p={3}>
             <ModalHeader>
               <Text textAlign={'center'}>Enter your Tunneal Bear Credentials</Text>
             </ModalHeader>
@@ -153,7 +167,7 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
       <Confirmations
         isOpen={confirmationIsOpen}
         onClose={onConfirmationClose}
-        onOpen={onCredentialOpen}
+        onOpen={onConfirmationSubmit}
       />
       <CreateConfirmations isOpen={createConfirmationIsOpen} onClose={onClose} />
     </>

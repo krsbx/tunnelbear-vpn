@@ -29,6 +29,7 @@ const CreateConfirmations = ({ isOpen, onClose }: Props) => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors, touchedFields: touched, isSubmitting },
   } = useForm({
     resolver: zodResolver(
@@ -41,15 +42,23 @@ const CreateConfirmations = ({ isOpen, onClose }: Props) => {
   const onSubmit = (values: { password: string }) => {
     store.set(CREDENTIALS.CONFIRMATION, values.password);
 
+    reset();
+
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      closeOnEsc={false}
+      closeOnOverlayClick={false}
+      isCentered
+    >
       <ModalOverlay>
-        <ModalContent>
+        <ModalContent p={3}>
           <ModalHeader>
-            <Text>Confirmation For Editing In The Future</Text>
+            <Text textAlign={'center'}>Confirmation For Editing In The Future</Text>
           </ModalHeader>
           <ModalBody>
             <Form onSubmit={handleSubmit(onSubmit)}>

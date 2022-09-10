@@ -103,7 +103,7 @@ export async function initialize(openvpnpath: string, args: AnyRecord) {
       : args
   );
 
-  childProcess.execFileSync(openvpnpath, newArgs);
+  childProcess.execFileSync(openvpnpath, newArgs as string[]);
 
   return {
     port: args.port,
