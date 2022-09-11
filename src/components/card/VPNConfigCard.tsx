@@ -1,5 +1,8 @@
 import { Button, ButtonProps, Flex, GridItem, Text } from '@chakra-ui/react';
 import React from 'react';
+import { APP_NAME } from '../../utils/constant/global';
+
+const { isDev } = window[APP_NAME];
 
 const VPNConfigCard = ({ config, ...props }: FCWithChild<Props>) => {
   const createName = () => {
@@ -11,7 +14,7 @@ const VPNConfigCard = ({ config, ...props }: FCWithChild<Props>) => {
   };
 
   const getImagePath = () => {
-    const path = '/images/flags';
+    const path = isDev ? '/images/flags' : 'static://images/flags';
 
     const name = createName().replace('TunnelBear ', '');
 

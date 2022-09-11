@@ -9,8 +9,6 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const assets = ['images']; // asset directories
 
-const isDev = process.env.IS_DEV === 'true';
-
 module.exports = [
   new ForkTsCheckerWebpackPlugin(),
   ...assets.map((asset) => {
@@ -18,11 +16,7 @@ module.exports = [
       patterns: [
         {
           from: path.resolve(__dirname, 'src', asset),
-          to: path.resolve(
-            __dirname,
-            isDev ? '.webpack/renderer' : '.webpack/renderer/main_window',
-            asset
-          ),
+          to: path.resolve(__dirname, '.webpack/renderer', asset),
         },
       ],
     });

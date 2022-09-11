@@ -19,4 +19,5 @@ contextBridge.exposeInMainWorld(APP_NAME, {
   util,
   platform: process.platform,
   cwd: process.cwd,
+  isDev: process.env.IS_DEV === 'true',
 });

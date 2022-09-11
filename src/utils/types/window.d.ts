@@ -16,8 +16,9 @@ declare global {
       Promise: typeof Promise;
       Telnet: typeof Telnet;
       util: typeof util;
-      platform: typeof NodeJS.Platform;
+      platform: NodeJS.Platform;
       cwd: () => string;
+      isDev: boolean;
     };
   }
 }
