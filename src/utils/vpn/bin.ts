@@ -7,6 +7,24 @@ export async function shutdown() {
   return true;
 }
 
+function setArgsUpDown(option: AnyRecord, args: unknown[]) {
+  if (option.up) args.push('--up', option.up);
+  if (option.down) args.push('--down', option.down);
+}
+
+function setConfigPath(newArgs: AnyRecord, args: AnyRecord) {
+  if (String(newArgs.config).includes('/')) {
+    const path = String(args.config).split('/');
+
+    let fileName = path.pop();
+
+    if (fileName.includes('.ovpn')) fileName = fileName.replaceAll(' ', '\\ ');
+
+    // eslint-disable-next-line no-param-reassign
+    newArgs.config = _.concat(path, fileName).join('/');
+  }
+}
+
 function getSetArgs(args: AnyRecord) {
   const newArgs: AnyRecord = _.defaults(_.cloneDeep(args), {
     host: '127.0.0.1',
@@ -36,6 +54,7 @@ function getSetArgs(args: AnyRecord) {
         '--management-hold',
         '--register-dns',
       ];
+
     case 'darwin': {
       const arg = [
         '--management',
@@ -49,20 +68,13 @@ function getSetArgs(args: AnyRecord) {
         '--management-hold',
         '--daemon',
       ];
-      if (newArgs.up) arg.push('--up', newArgs.up);
-      if (newArgs.down) arg.push('--down', newArgs.down);
+
+      setArgsUpDown(newArgs, arg);
+
       return arg;
     }
     case 'linux': {
-      if (String(newArgs.config).includes('/')) {
-        const path = String(args.config).split('/');
-
-        let fileName = path.pop();
-
-        if (fileName.includes('.ovpn')) fileName = fileName.replaceAll(' ', '\\ ');
-
-        newArgs.config = _.concat(path, fileName).join('/');
-      }
+      setConfigPath(newArgs, args);
 
       const arg = [
         '--management',
@@ -79,8 +91,7 @@ function getSetArgs(args: AnyRecord) {
         'tun0',
       ];
 
-      if (newArgs.up) arg.push('--up', newArgs.up);
-      if (newArgs.down) arg.push('--down', newArgs.down);
+      setArgsUpDown(newArgs, arg);
 
       return arg;
     }
