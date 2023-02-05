@@ -32,7 +32,7 @@ const indexHtml = join(ROOT_PATH.dist, 'index.html');
 
 const createWindow = async () => {
   const mainWindow = new BrowserWindow({
-    title: 'VITE ELECTRON TEMPLATE',
+    title: 'Tunnelbear VPN',
     icon: join(ROOT_PATH.public, 'vite.svg'),
     webPreferences: {
       preload,

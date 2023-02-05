@@ -8,16 +8,10 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
   const { connectOpenVpn, disconnectOpenVpn } = useOpenVpn();
 
   const { configName, configImagePath, dirPath } = useMemo(() => {
-    const names = config.name.split('.');
+    const names = config.name.replace(/.ovpn/g, '').replace(/.txt/g, '');
 
-    names.pop();
-
-    const configName = names.join('.');
-
-    const configImagePath = `/images/flags/${configName.replace(
-      /TunnelBear /g,
-      ''
-    )}.svg`;
+    const configName = names.replace(/TunnelBear /g, '');
+    const configImagePath = `/images/flags/${configName.replace(/ /g, '')}.svg`;
 
     const paths = config.path.split('/');
 
@@ -40,7 +34,12 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
 
   return (
     <GridItem>
-      <Flex width={'100%'} justifyContent={'center'} alignItems={'center'}>
+      <Flex
+        width={'100%'}
+        justifyContent={'center'}
+        alignItems={'center'}
+        position={'relative'}
+      >
         <Button
           {...props}
           width={'20rem'}
@@ -56,9 +55,18 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
             fontWeight: 'bold',
           }}
           onClick={onClickOnCard}
+        />
+        <Text
+          position={'absolute'}
+          translateX={'-50%'}
+          translateY={'-50%'}
+          color={'white'}
+          pointerEvents={'none'}
+          fontWeight={'bold'}
+          textTransform={'uppercase'}
         >
-          <Text>{configName}</Text>
-        </Button>
+          {configName}
+        </Text>
       </Flex>
     </GridItem>
   );

@@ -25,7 +25,7 @@ const App: React.FC = () => {
 
       if (!fileName) return;
 
-      const fileNameNoExt = fileName.split('.').shift();
+      const fileNameNoExt = fileName.replace(/.ovpn/g, '').replace(/.txt/g, '');
 
       Storage.instance.set(fileNameNoExt ?? fileName, {
         name: fileName,
