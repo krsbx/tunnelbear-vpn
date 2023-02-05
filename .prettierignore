@@ -1,8 +1,0 @@
-node_modules/
-
-next-env.d.ts
-next.config.js
-package.json
-package-lock.json
-.eslintrc.json
-tsconfig.json

@@ -1,0 +1,50 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  appId: 'com.krsbx.runts',
+  productName: 'Run TS',
+  copyright: 'Copyright © 2022 ${author}',
+  asar: true,
+  directories: {
+    output: 'release/${version}',
+    buildResources: 'electron/resources',
+  },
+  files: ['dist', 'dist-electron'],
+  extraFiles: [
+    {
+      from: 'electron/files',
+      to: 'files',
+      filter: ['**/*'],
+    },
+    {
+      from: 'node_modules/yarn',
+      to: 'files/yarn',
+      filter: ['**/*'],
+    },
+  ],
+  win: {
+    target: [
+      {
+        target: 'nsis',
+        arch: ['x64'],
+      },
+    ],
+    artifactName: '${productName}_${version}.${ext}',
+  },
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowToChangeInstallationDirectory: true,
+    deleteAppDataOnUninstall: false,
+  },
+  mac: {
+    artifactName: '${productName}_${version}.${ext}',
+    target: ['dmg'],
+  },
+  linux: {
+    artifactName: '${productName}_${version}.${ext}',
+    target: ['deb'],
+    category: 'Development',
+  },
+}
