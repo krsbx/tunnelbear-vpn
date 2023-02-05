@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
+import './ipc';
 
 const DIST_PATH = join(__dirname, '../dist');
 
