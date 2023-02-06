@@ -1,5 +1,5 @@
+import sudo from '@vscode/sudo-prompt';
 import { ipcMain } from 'electron';
-import sudo from 'sudo-prompt';
 import { execAsync } from '../../src/utils/common';
 import { APP_NAME, CREDENTIALS } from '../../src/utils/constant';
 import { COMMAND_ACTION } from '../../src/utils/enums/ipc.command';
@@ -58,6 +58,9 @@ ipcMain.handle(
       results.userCertificate = true;
     }
 
-    return results;
+    return {
+      results,
+      contents,
+    };
   }
 );

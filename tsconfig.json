@@ -19,6 +19,6 @@
       "vite-plugin-electron/electron-env"
     ]
   },
-  "include": ["src"],
+  "include": ["src", "types"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

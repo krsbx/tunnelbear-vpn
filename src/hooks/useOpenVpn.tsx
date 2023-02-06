@@ -12,17 +12,16 @@ const useOpenVpn = () => {
   const { copy, writeFile } = useReadWriteIpcEvent();
   const { executeSudoCommand, executeCommand } = useSudoAction();
 
-  const modifyConfig = useCallback((contents: string[]) => {
-    return window.ipcRenderer.invoke(
-      COMMAND_ACTION.MODIFY_CONFIG,
-      contents,
-      store.get(CREDENTIALS.CREDENTIALS, {})
-    ) as Promise<{
-      credentials: Tunnelbear.Schema['Credential'];
-      caCertificate: boolean;
-      userCertificate: boolean;
-    }>;
-  }, []);
+  const modifyConfig = useCallback(
+    (contents: string[], credentials: unknown) => {
+      return window.ipcRenderer.invoke(
+        COMMAND_ACTION.MODIFY_CONFIG,
+        contents,
+        credentials
+      ) as Promise<Tunnelbear.ModifyConfigResponse>;
+    },
+    []
+  );
 
   const disconnectOpenVpn = useCallback(
     () => executeSudoCommand(COMMANDS.KILL_OPVPN_PIDS),
@@ -30,18 +29,20 @@ const useOpenVpn = () => {
   );
 
   const connectOpenVpn = useCallback(
-    async (dirPath: string, contents: string[]) => {
+    async (dirPath: string, originalContents: string[]) => {
       const appDataPath = await getAppDataPath();
-      const results = await modifyConfig(contents);
+      const credentials = JSON.parse(store.get(CREDENTIALS.CREDENTIALS, {}));
+      const { results, contents } = await modifyConfig(
+        originalContents,
+        credentials
+      );
 
       await Promise.all(
         _.compact([
           !_.isEmpty(results.credentials) &&
             writeFile(
               `${appDataPath}/credentials.conf`,
-              [results.credentials.username, results.credentials.password].join(
-                '\n'
-              )
+              [credentials.username, credentials.password].join('\n')
             ),
           results.caCertificate &&
             copy(
@@ -59,9 +60,15 @@ const useOpenVpn = () => {
         ])
       );
 
-      const openVpnPids = (
-        (await executeCommand(COMMANDS.GET_OVPN_PIDS)).stdout as string
-      ).split('\n');
+      const openVpnPids: string[] = [];
+
+      try {
+        openVpnPids.concat(
+          (
+            (await executeCommand(COMMANDS.GET_OVPN_PIDS)).stdout as string
+          ).split('\n')
+        );
+      } catch {}
 
       const commands = [`cd ${appDataPath}`, COMMANDS.START_VPN];
 

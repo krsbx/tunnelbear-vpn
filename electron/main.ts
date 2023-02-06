@@ -1,7 +1,14 @@
 import { app, BrowserWindow, shell } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
+import type { AppState } from '../types/tunnelbear';
 import './ipc';
+import { setupTray } from './main/setup';
+
+const appState: AppState = {
+  tray: null,
+  isFirstRender: true,
+};
 
 const DIST_PATH = join(__dirname, '../dist');
 
@@ -40,8 +47,9 @@ const createWindow = async () => {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
     },
-    minWidth: 500,
-    minHeight: 500,
+    minWidth: 650,
+    minHeight: 650,
+    frame: false,
   });
 
   if (app.isPackaged) {
@@ -90,4 +98,10 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+app.whenReady().then(() => {
+  const mainWindow = BrowserWindow.getAllWindows()[0];
+
+  setupTray(appState, mainWindow);
 });
