@@ -1,19 +1,25 @@
-import sudo from '@vscode/sudo-prompt';
 import { ipcMain } from 'electron';
+import sudo from 'sudo-prompt';
 import { execAsync } from '../../src/utils/common';
-import { APP_NAME, CREDENTIALS } from '../../src/utils/constant';
+import { APP_NAME } from '../../src/utils/constant';
 import { COMMAND_ACTION } from '../../src/utils/enums/ipc.command';
 
 ipcMain.handle(COMMAND_ACTION.SUDO_EXECUTE, (event, command: string) => {
-  return sudo.exec(
-    command,
-    {
-      name: APP_NAME,
-    },
-    (err, stdout, stderr) => {
-      console.log({ err, stdout, stderr });
-    }
-  );
+  return new Promise<{
+    err?: Error;
+    stdout?: string | Buffer;
+    stderr?: string | Buffer;
+  }>((resolve) => {
+    sudo.exec(
+      command,
+      {
+        name: APP_NAME,
+      },
+      (err, stdout, stderr) => {
+        resolve({ err, stdout, stderr });
+      }
+    );
+  });
 });
 
 ipcMain.handle(COMMAND_ACTION.EXECUTE, (event, command: string) => {

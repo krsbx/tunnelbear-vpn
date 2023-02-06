@@ -1,9 +1,9 @@
-import sudo from '@vscode/sudo-prompt';
 import { exec } from 'child_process';
 import { app } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import sudo from 'sudo-prompt';
 import { promisify } from 'util';
 import { APP_NAME, COMMANDS, Platform } from './constant';
 

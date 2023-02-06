@@ -4,13 +4,13 @@ import store from 'store';
 import { COMMANDS, CREDENTIALS } from '../utils/constant';
 import { COMMAND_ACTION } from '../utils/enums/ipc.command';
 import useAppIpcEvent from './useAppIpcEvent';
+import useCommandIpcEvent from './useCommandIpcEvent';
 import useReadWriteIpcEvent from './useReadWriteIpcEvent';
-import useSudoAction from './useSudoAction';
 
 const useOpenVpn = () => {
   const { getAppDataPath } = useAppIpcEvent();
   const { copy, writeFile } = useReadWriteIpcEvent();
-  const { executeSudoCommand, executeCommand } = useSudoAction();
+  const { executeSudoCommand, executeCommand } = useCommandIpcEvent();
 
   const modifyConfig = useCallback(
     (contents: string[], credentials: unknown) => {
@@ -74,7 +74,9 @@ const useOpenVpn = () => {
 
       if (openVpnPids.length) commands.unshift(COMMANDS.KILL_OPVPN_PIDS);
 
-      await executeSudoCommand(commands.join(' && '));
+      try {
+        await executeSudoCommand(commands.join(' && '));
+      } catch {}
     },
     []
   );

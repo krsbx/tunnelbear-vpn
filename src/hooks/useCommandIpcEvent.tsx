@@ -7,14 +7,25 @@ const useCommandIpcEvent = () => {
     return window.ipcRenderer.invoke(
       COMMAND_ACTION.SUDO_EXECUTE,
       command
-    ) as Promise<void>;
+    ) as Promise<{
+      err?: Error;
+      stdout?: string | Buffer;
+      stderr?: string | Buffer;
+    }>;
   }, []);
 
-  const executeCommand = useCallback((command: string) => {
-    return window.ipcRenderer.invoke(
-      COMMAND_ACTION.EXECUTE,
-      command
-    ) as Promise<ReturnType<typeof execAsync>>;
+  const executeCommand = useCallback(async (command: string) => {
+    try {
+      return window.ipcRenderer.invoke(
+        COMMAND_ACTION.EXECUTE,
+        command
+      ) as Promise<ReturnType<typeof execAsync>>;
+    } catch (err) {
+      return {
+        stderr: err,
+        stdout: undefined,
+      };
+    }
   }, []);
 
   return { executeSudoCommand, executeCommand };

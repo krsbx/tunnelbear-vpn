@@ -1,17 +1,14 @@
-import { Button, Flex, Stack, useDisclosure } from '@chakra-ui/react';
+import { Flex, useDisclosure } from '@chakra-ui/react';
 import _ from 'lodash';
 import React from 'react';
-import { IoIosResize, IoMdClose } from 'react-icons/io';
-import { MdMinimize } from 'react-icons/md';
 import CardLayout from './components/CardLayout';
 import Credentials from './components/modals/Credentials';
+import TopBar from './components/TopBar';
 import VpnCard from './components/VpnCard';
-import useConfigImporter from './hooks/useConfigImporter';
 import Storage from './utils/Storage';
 
 const App: React.FC = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const importConfig = useConfigImporter();
 
   return (
     <Flex
@@ -21,46 +18,8 @@ const App: React.FC = () => {
       p={2}
       flexDirection={'column'}
     >
-      <Flex
-        rowGap={1}
-        justifyContent={'space-between'}
-        width={'100%'}
-        id={'custom-topbar'}
-      >
-        <Stack direction={'row'} spacing={3}>
-          <Button
-            variant={'solid'}
-            p={2}
-            onClick={importConfig}
-            fontSize={'10px'}
-            height={'30px'}
-          >
-            Import Configs
-          </Button>
-          <Button
-            variant={'solid'}
-            p={2}
-            onClick={onOpen}
-            fontSize={'10px'}
-            height={'30px'}
-          >
-            Configure Auth
-          </Button>
-        </Stack>
-
-        <Stack direction={'row'} spacing={3}>
-          <Button p={0} height={'30px'} width={'30px'} minWidth={0}>
-            <MdMinimize />
-          </Button>
-          <Button p={0} height={'30px'} width={'30px'} minWidth={0}>
-            <IoIosResize />
-          </Button>
-          <Button p={0} height={'30px'} width={'30px'} minWidth={0}>
-            <IoMdClose />
-          </Button>
-        </Stack>
-      </Flex>
-      <CardLayout overflow={'auto'}>
+      <TopBar onOpen={onOpen} />
+      <CardLayout overflow={'auto'} backgroundColor={'gray.800'}>
         {_.map(Storage.instance.storage, (value, key) => (
           <VpnCard config={value} key={key} />
         ))}

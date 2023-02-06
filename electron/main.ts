@@ -3,6 +3,7 @@ import { release } from 'os';
 import { join } from 'path';
 import type { AppState } from '../types/tunnelbear';
 import './ipc';
+import { setupWindowAction } from './ipc/window';
 import { setupTray } from './main/setup';
 
 const appState: AppState = {
@@ -104,4 +105,5 @@ app.whenReady().then(() => {
   const mainWindow = BrowserWindow.getAllWindows()[0];
 
   setupTray(appState, mainWindow);
+  setupWindowAction(mainWindow);
 });
