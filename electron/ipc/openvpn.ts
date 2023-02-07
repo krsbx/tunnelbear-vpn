@@ -40,13 +40,6 @@ ipcMain.handle(
             `${dirPath}/CACertificate.crt`,
             `${appDataPath}/CACertificate.crt`
           ),
-        results.userCertificate &&
-          fs.copy(
-            `${dirPath}/UserCertificate.crt`,
-            `${appDataPath}/UserCertificate.crt`
-          ),
-        results.userCertificate &&
-          fs.copy(`${dirPath}/PrivateKey.key`, `${appDataPath}/PrivateKey.key`),
         fs.writeFile(`${appDataPath}/config.ovpn`, contents.join('\n')),
       ])
     );

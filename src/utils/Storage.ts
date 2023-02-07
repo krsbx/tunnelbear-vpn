@@ -43,6 +43,14 @@ class Storage {
 
     console.log('Saved config to LocalStorage.');
   }
+
+  public delete(key: string) {
+    delete this.storage[key];
+
+    store.set(this.name, JSON.stringify(this.storage));
+
+    console.log(`Config removed from LocalStorage`);
+  }
 }
 
 export default Storage;
