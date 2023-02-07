@@ -11,7 +11,10 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
     const names = config.name.replace(/.ovpn/g, '').replace(/.txt/g, '');
 
     const configName = names.replace(/TunnelBear /g, '');
-    const configImagePath = `/images/flags/${configName.replace(/ /g, '')}.svg`;
+    const configImagePath = `./images/flags/${configName.replace(
+      / /g,
+      ''
+    )}.svg`;
 
     const paths = config.path.split('/');
 
