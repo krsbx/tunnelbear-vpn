@@ -17,7 +17,6 @@ export type ModifyConfigResponse = {
   results: {
     credentials: Tunnelbear.Schema['Credential'];
     caCertificate: boolean;
-    userCertificate: boolean;
   };
 };
 

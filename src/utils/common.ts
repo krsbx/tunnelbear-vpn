@@ -50,7 +50,6 @@ export const modifyContent = (contents: string[], credentials: unknown) => {
       password: '',
     },
     caCertificate: false,
-    userCertificate: false,
   };
 
   const credIndex = contents.findIndex((str) => str.includes('auth-user-pass'));
@@ -71,11 +70,7 @@ export const modifyContent = (contents: string[], credentials: unknown) => {
     str.includes('cert UserCertificate.crt')
   );
 
-  if (userCertIndex !== -1) {
-    contents.splice(userCertIndex, 0, 'key PrivateKey.key');
-
-    results.userCertificate = true;
-  }
+  if (userCertIndex !== -1) contents.splice(userCertIndex, 1);
 
   return {
     results,
