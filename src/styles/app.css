@@ -1,0 +1,8 @@
+#custom-topbar {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
+#custom-topbar button {
+  -webkit-app-region: no-drag;
+}

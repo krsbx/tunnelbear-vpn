@@ -19,8 +19,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import store from 'store';
-import z from 'zod';
-import { CREDENTIALS } from '../../utils/constant/global';
+import { CREDENTIALS } from '../../utils/constant';
+import { passwordSchema } from '../../utils/schema';
 import Form from '../Form';
 
 const Confirmations = ({ isOpen, onClose, onOpen }: Props) => {
@@ -31,15 +31,11 @@ const Confirmations = ({ isOpen, onClose, onOpen }: Props) => {
     register,
     reset,
     formState: { errors, touchedFields: touched, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(
-      z.object({
-        password: z.string().min(0),
-      })
-    ),
+  } = useForm<Tunnelbear.Schema['Password']>({
+    resolver: zodResolver(passwordSchema),
   });
 
-  const onSubmit = (values: { password: string }) => {
+  const onSubmit = (values: Tunnelbear.Schema['Password']) => {
     const password = store.get(CREDENTIALS.CONFIRMATION);
 
     if (!password) {
@@ -66,7 +62,9 @@ const Confirmations = ({ isOpen, onClose, onOpen }: Props) => {
           <ModalBody>
             <Form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={4}>
-                <FormControl isInvalid={!!errors?.password?.message && !!touched?.password}>
+                <FormControl
+                  isInvalid={!!errors?.password?.message && !!touched?.password}
+                >
                   <FormLabel htmlFor="password">Password</FormLabel>
                   <InputGroup>
                     <Input
@@ -83,9 +81,15 @@ const Confirmations = ({ isOpen, onClose, onOpen }: Props) => {
                       {isPasswordVisible ? <FiEye /> : <FiEyeOff />}
                     </InputRightElement>
                   </InputGroup>
-                  <FormErrorMessage>{String(errors?.password?.message)}</FormErrorMessage>
+                  <FormErrorMessage>
+                    {String(errors?.password?.message)}
+                  </FormErrorMessage>
                 </FormControl>
-                <Button variant={'solid'} isLoading={isSubmitting} type={'submit'}>
+                <Button
+                  variant={'solid'}
+                  isLoading={isSubmitting}
+                  type={'submit'}
+                >
                   Proceed To Editing
                 </Button>
               </Stack>

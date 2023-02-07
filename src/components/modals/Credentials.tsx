@@ -20,8 +20,8 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import store from 'store';
-import z from 'zod';
-import { CREDENTIALS } from '../../utils/constant/global';
+import { CREDENTIALS } from '../../utils/constant';
+import { credentialSchema } from '../../utils/schema';
 import Form from '../Form';
 import Confirmations from './Confirmations';
 import CreateConfirmations from './CreateConfirmations';
@@ -52,13 +52,8 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
     register,
     setValue,
     formState: { errors, touchedFields: touched, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(
-      z.object({
-        username: z.string().min(1),
-        password: z.string().min(0),
-      })
-    ),
+  } = useForm<Tunnelbear.Schema['Credential']>({
+    resolver: zodResolver(credentialSchema),
   });
 
   const onClose = () => {
@@ -70,7 +65,7 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
     onCredentialClose();
   };
 
-  const onSubmit = (values: { username: string; password: string }) => {
+  const onSubmit = (values: Tunnelbear.Schema['Credential']) => {
     store.set(CREDENTIALS.CREDENTIALS, JSON.stringify(values));
 
     if (!store.get(CREDENTIALS.CONFIRMATION)) {
@@ -119,12 +114,18 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
         <ModalOverlay>
           <ModalContent p={3}>
             <ModalHeader>
-              <Text textAlign={'center'}>Enter your Tunneal Bear Credentials</Text>
+              <Text textAlign={'center'}>
+                Enter your Tunneal Bear Credentials
+              </Text>
             </ModalHeader>
             <ModalBody>
               <Form onSubmit={handleSubmit(onSubmit)}>
                 <Stack spacing={4}>
-                  <FormControl isInvalid={!!errors?.username?.message && !!touched?.username}>
+                  <FormControl
+                    isInvalid={
+                      !!errors?.username?.message && !!touched?.username
+                    }
+                  >
                     <FormLabel htmlFor="username">Email</FormLabel>
                     <InputGroup>
                       <Input
@@ -134,9 +135,15 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
                         placeholder="Tunnealbear email..."
                       />
                     </InputGroup>
-                    <FormErrorMessage>{String(errors?.username?.message)}</FormErrorMessage>
+                    <FormErrorMessage>
+                      {String(errors?.username?.message)}
+                    </FormErrorMessage>
                   </FormControl>
-                  <FormControl isInvalid={!!errors?.password?.message && !!touched?.password}>
+                  <FormControl
+                    isInvalid={
+                      !!errors?.password?.message && !!touched?.password
+                    }
+                  >
                     <FormLabel htmlFor="password">Password</FormLabel>
                     <InputGroup>
                       <Input
@@ -153,9 +160,15 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
                         {isPasswordVisible ? <FiEye /> : <FiEyeOff />}
                       </InputRightElement>
                     </InputGroup>
-                    <FormErrorMessage>{String(errors?.password?.message)}</FormErrorMessage>
+                    <FormErrorMessage>
+                      {String(errors?.password?.message)}
+                    </FormErrorMessage>
                   </FormControl>
-                  <Button variant={'solid'} isLoading={isSubmitting} type={'submit'}>
+                  <Button
+                    variant={'solid'}
+                    isLoading={isSubmitting}
+                    type={'submit'}
+                  >
                     Save My Credentials
                   </Button>
                 </Stack>
@@ -169,7 +182,10 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
         onClose={onConfirmationClose}
         onOpen={onConfirmationSubmit}
       />
-      <CreateConfirmations isOpen={createConfirmationIsOpen} onClose={onClose} />
+      <CreateConfirmations
+        isOpen={createConfirmationIsOpen}
+        onClose={onClose}
+      />
     </>
   );
 };

@@ -1,20 +1,24 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "allowJs": true,
-    "module": "commonjs",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "noImplicitAny": true,
-    "sourceMap": true,
-    "baseUrl": ".",
-    "outDir": "dist",
-    "target": "ESNext",
-    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "paths": {
-      "*": ["node_modules/*"]
-    }
+    "isolatedModules": false,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": [
+      "vite-plugin-electron/electron-env"
+    ]
   },
-  "include": ["src/**/*"]
+  "include": ["src", "types"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

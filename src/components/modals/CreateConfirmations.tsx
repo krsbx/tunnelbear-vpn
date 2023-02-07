@@ -19,8 +19,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import store from 'store';
-import z from 'zod';
-import { CREDENTIALS } from '../../utils/constant/global';
+import { CREDENTIALS } from '../../utils/constant';
+import { passwordSchema } from '../../utils/schema';
 import Form from '../Form';
 
 const CreateConfirmations = ({ isOpen, onClose }: Props) => {
@@ -31,15 +31,11 @@ const CreateConfirmations = ({ isOpen, onClose }: Props) => {
     register,
     reset,
     formState: { errors, touchedFields: touched, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(
-      z.object({
-        password: z.string().min(3),
-      })
-    ),
+  } = useForm<Tunnelbear.Schema['Password']>({
+    resolver: zodResolver(passwordSchema),
   });
 
-  const onSubmit = (values: { password: string }) => {
+  const onSubmit = (values: Tunnelbear.Schema['Password']) => {
     store.set(CREDENTIALS.CONFIRMATION, values.password);
 
     reset();
@@ -58,12 +54,16 @@ const CreateConfirmations = ({ isOpen, onClose }: Props) => {
       <ModalOverlay>
         <ModalContent p={3}>
           <ModalHeader>
-            <Text textAlign={'center'}>Confirmation For Editing In The Future</Text>
+            <Text textAlign={'center'}>
+              Confirmation For Editing In The Future
+            </Text>
           </ModalHeader>
           <ModalBody>
             <Form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={4}>
-                <FormControl isInvalid={!!errors?.password?.message && !!touched?.password}>
+                <FormControl
+                  isInvalid={!!errors?.password?.message && !!touched?.password}
+                >
                   <FormLabel htmlFor="password">Password</FormLabel>
                   <InputGroup>
                     <Input
@@ -80,9 +80,15 @@ const CreateConfirmations = ({ isOpen, onClose }: Props) => {
                       {isPasswordVisible ? <FiEye /> : <FiEyeOff />}
                     </InputRightElement>
                   </InputGroup>
-                  <FormErrorMessage>{String(errors?.password?.message)}</FormErrorMessage>
+                  <FormErrorMessage>
+                    {String(errors?.password?.message)}
+                  </FormErrorMessage>
                 </FormControl>
-                <Button variant={'solid'} isLoading={isSubmitting} type={'submit'}>
+                <Button
+                  variant={'solid'}
+                  isLoading={isSubmitting}
+                  type={'submit'}
+                >
                   Save My Confirmation
                 </Button>
               </Stack>

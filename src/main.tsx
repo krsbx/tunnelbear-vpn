@@ -1,15 +1,14 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom/client';
 import App from './App';
+import './styles/app.css';
 import theme from './utils/theme';
 
-const root = createRoot(document.getElementById('root') as HTMLDivElement);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const rootEl = document.getElementById('root')! as HTMLElement;
 
-root.render(
-  <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <App />
-    </ChakraProvider>
-  </React.StrictMode>
+ReactDOM.createRoot(rootEl).render(
+  <ChakraProvider theme={theme}>
+    <App />
+  </ChakraProvider>
 );
