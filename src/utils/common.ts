@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { app } from 'electron';
 import fs from 'fs';
+import _ from 'lodash';
 import os from 'os';
 import path from 'path';
 import sudo from 'sudo-prompt';
@@ -24,48 +25,103 @@ export const getAppDataPath = () => {
 export const execAsync = promisify(exec);
 
 export const executeSudoCommand = (command: string) =>
-  sudo.exec(
-    command,
-    {
-      name: APP_NAME,
-    },
-    (err, stdout, stderr) => {
-      console.log({ err, stdout, stderr });
-    }
-  );
+  new Promise<{
+    err?: Error;
+    stdout?: string | Buffer;
+    stderr?: string | Buffer;
+  }>((resolve) => {
+    sudo.exec(
+      command,
+      {
+        name: APP_NAME,
+      },
+      (err, stdout, stderr) => {
+        resolve({ err, stdout, stderr });
+      }
+    );
+  });
 
 export const executeCommand = (command: string) => execAsync(command);
 
-export const connectToLastConnection = async () => {
+export const modifyContent = (contents: string[], credentials: unknown) => {
+  const results = {
+    credentials: {
+      username: '',
+      password: '',
+    },
+    caCertificate: false,
+    userCertificate: false,
+  };
+
+  const credIndex = contents.findIndex((str) => str.includes('auth-user-pass'));
+
+  if (credIndex !== -1) {
+    contents[credIndex] = 'auth-user-pass credentials.conf';
+
+    results.credentials = credentials as typeof results['credentials'];
+  }
+
+  const caCertIndex = contents.findIndex((str) =>
+    str.includes('ca CACertificate.crt')
+  );
+
+  if (caCertIndex !== -1) results.caCertificate = true;
+
+  const userCertIndex = contents.findIndex((str) =>
+    str.includes('cert UserCertificate.crt')
+  );
+
+  if (userCertIndex !== -1) {
+    contents.splice(userCertIndex, 0, 'key PrivateKey.key');
+
+    results.userCertificate = true;
+  }
+
+  return {
+    results,
+    contents,
+  };
+};
+
+export const getConnectionStatus = async () => {
   const openVpnPids: string[] = [];
 
+  try {
+    console.log('Getting all OpenVPN process...');
+
+    const { stdout } = await executeCommand(COMMANDS.GET_OVPN_PIDS);
+
+    const pIds = _.compact((stdout as string).split('\n'));
+
+    if (pIds.length) openVpnPids.push(...pIds);
+  } catch {
+    console.log('No any OpenVPN process are running...');
+  }
+
+  return openVpnPids;
+};
+
+export const connectToLastConnection = async () => {
   if (!fs.existsSync(path.join(getAppDataPath(), 'config.ovpn'))) return;
 
-  try {
-    openVpnPids.concat(
-      ((await executeCommand(COMMANDS.GET_OVPN_PIDS)).stdout as string).split(
-        '\n'
-      )
-    );
-  } catch {}
+  const openVpnPids: string[] = await getConnectionStatus();
 
   const commands = [`cd ${getAppDataPath()}`, COMMANDS.START_VPN];
 
-  if (openVpnPids.length) commands.unshift(COMMANDS.KILL_OPVPN_PIDS);
+  if (openVpnPids.length) {
+    commands.unshift(COMMANDS.KILL_OPVPN_PIDS);
+
+    console.log('Some OpenVPN process detected');
+    console.log('Removing it before connecting...');
+  }
 
   return executeSudoCommand(commands.join(' && '));
 };
 
 export const disconnectAll = async () => {
-  const openVpnPids: string[] = [];
+  const openVpnPids: string[] = await getConnectionStatus();
 
-  try {
-    openVpnPids.concat(
-      ((await executeCommand(COMMANDS.GET_OVPN_PIDS)).stdout as string).split(
-        '\n'
-      )
-    );
-  } catch {}
+  if (!openVpnPids.length) return;
 
-  if (openVpnPids.length) return executeSudoCommand(COMMANDS.KILL_OPVPN_PIDS);
+  executeSudoCommand(COMMANDS.KILL_OPVPN_PIDS);
 };

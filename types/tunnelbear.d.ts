@@ -23,7 +23,8 @@ export type ModifyConfigResponse = {
 
 export type AppState = {
   tray: Tray | null;
-  isFirstRender: boolean;
+  isConnected: boolean;
+  isProcessing: boolean;
 };
 
 export as namespace Tunnelbear;

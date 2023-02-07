@@ -1,25 +1,13 @@
 import { ipcMain } from 'electron';
-import sudo from 'sudo-prompt';
-import { execAsync } from '../../src/utils/common';
-import { APP_NAME } from '../../src/utils/constant';
+import {
+  execAsync,
+  executeSudoCommand,
+  modifyContent,
+} from '../../src/utils/common';
 import { COMMAND_ACTION } from '../../src/utils/enums/ipc.command';
 
 ipcMain.handle(COMMAND_ACTION.SUDO_EXECUTE, (event, command: string) => {
-  return new Promise<{
-    err?: Error;
-    stdout?: string | Buffer;
-    stderr?: string | Buffer;
-  }>((resolve) => {
-    sudo.exec(
-      command,
-      {
-        name: APP_NAME,
-      },
-      (err, stdout, stderr) => {
-        resolve({ err, stdout, stderr });
-      }
-    );
-  });
+  return executeSudoCommand(command);
 });
 
 ipcMain.handle(COMMAND_ACTION.EXECUTE, (event, command: string) => {
@@ -29,44 +17,6 @@ ipcMain.handle(COMMAND_ACTION.EXECUTE, (event, command: string) => {
 ipcMain.handle(
   COMMAND_ACTION.MODIFY_CONFIG,
   (event, contents: string[], credentials: unknown) => {
-    const results = {
-      credentials: {
-        username: '',
-        password: '',
-      },
-      caCertificate: false,
-      userCertificate: false,
-    };
-
-    const credIndex = contents.findIndex((str) =>
-      str.includes('auth-user-pass')
-    );
-
-    if (credIndex !== -1) {
-      contents[credIndex] = 'auth-user-pass credentials.conf';
-
-      results.credentials = credentials as typeof results['credentials'];
-    }
-
-    const caCertIndex = contents.findIndex((str) =>
-      str.includes('ca CACertificate.crt')
-    );
-
-    if (caCertIndex !== -1) results.caCertificate = true;
-
-    const userCertIndex = contents.findIndex((str) =>
-      str.includes('cert UserCertificate.crt')
-    );
-
-    if (userCertIndex !== -1) {
-      contents.splice(userCertIndex, 0, 'key PrivateKey.key');
-
-      results.userCertificate = true;
-    }
-
-    return {
-      results,
-      contents,
-    };
+    return modifyContent(contents, credentials);
   }
 );

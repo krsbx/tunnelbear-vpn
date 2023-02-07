@@ -1,14 +1,9 @@
 import { BrowserWindow, clipboard, Menu, Tray } from 'electron';
-import {
-  connectToLastConnection,
-  disconnectAll,
-  executeCommand,
-  executeSudoCommand,
-  getAppDataPath,
-} from '../../src/utils/common';
-import { COMMANDS } from '../../src/utils/constant';
+import { connectToLastConnection, disconnectAll } from '../../src/utils/common';
+import type Tunnelbear from '../../types/tunnelbear';
+import { appState } from '../main';
 
-const setTray = (appState: Tunnelbear.AppState, mainWindow: BrowserWindow) => {
+const setTray = (mainWindow: BrowserWindow) => {
   appState.tray = new Tray(clipboard.readImage());
 
   const contextMenu = Menu.buildFromTemplate([
@@ -46,14 +41,11 @@ const setTray = (appState: Tunnelbear.AppState, mainWindow: BrowserWindow) => {
   mainWindow.hide();
 };
 
-export const setupTray = (
-  appState: Tunnelbear.AppState,
-  mainWindow: BrowserWindow
-) => {
+export const setupTray = (mainWindow: BrowserWindow) => {
   mainWindow.on('minimize', () => {
     if (appState.tray) return mainWindow.hide();
 
-    setTray(appState, mainWindow);
+    setTray(mainWindow);
   });
 
   mainWindow.on('restore', () => {

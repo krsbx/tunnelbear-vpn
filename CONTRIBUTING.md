@@ -1,15 +1,15 @@
 # Contribution Guidelines
 
-When contributing to `run-ts`, whether on GitHub or in other community spaces:
+When contributing to `tunnelbear-vpn`, whether on GitHub or in other community spaces:
 
 - Be respectful, civil, and open-minded.
-- Before opening a new pull request, try searching through the [issue tracker](https://github.com/krsbx/run-ts/issues) for known issues or fixes.
+- Before opening a new pull request, try searching through the [issue tracker](https://github.com/krsbx/tunnelbear-vpn/issues) for known issues or fixes.
 
 ## How to Contribute
 
 ### Prerequisites
 
-In order to not waste your time implementing changes that has already been declined, or is generally not needed, start by [opening an issue](https://github.com/krsbx/run-ts/issues/new/choose) describing the problem you would like to solve.
+In order to not waste your time implementing changes that has already been declined, or is generally not needed, start by [opening an issue](https://github.com/krsbx/tunnelbear-vpn/issues/new/choose) describing the problem you would like to solve.
 
 ### Setup your environment
 
@@ -19,7 +19,7 @@ In order to contribute to this project, you need to do this steps:
 2. Clone the forked repository to you local machines:
 
 ```bash
-git clone https://github.com/<your-github-name>/run-ts.git
+git clone https://github.com/<your-github-name>/tunnelbear-vpn.git
 ```
 
 3. Install all the dependecies
@@ -39,7 +39,7 @@ git commit -m "feat/fix/chore/docs: commit message"
 
 ### When you're done
 
-Please a make PR to the [upstream](https://github.com/krsbx/run-ts/) in the main branch.
+Please a make PR to the [upstream](https://github.com/krsbx/tunnelbear-vpn/) in the main branch.
 
 ## Credits
 

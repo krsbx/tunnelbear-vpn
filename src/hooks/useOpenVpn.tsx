@@ -2,26 +2,11 @@ import _ from 'lodash';
 import { useCallback } from 'react';
 import store from 'store';
 import { COMMANDS, CREDENTIALS } from '../utils/constant';
-import { COMMAND_ACTION } from '../utils/enums/ipc.command';
-import useAppIpcEvent from './useAppIpcEvent';
+import { OPEN_VPN } from '../utils/enums/ipc.openvpn';
 import useCommandIpcEvent from './useCommandIpcEvent';
-import useReadWriteIpcEvent from './useReadWriteIpcEvent';
 
 const useOpenVpn = () => {
-  const { getAppDataPath } = useAppIpcEvent();
-  const { copy, writeFile } = useReadWriteIpcEvent();
-  const { executeSudoCommand, executeCommand } = useCommandIpcEvent();
-
-  const modifyConfig = useCallback(
-    (contents: string[], credentials: unknown) => {
-      return window.ipcRenderer.invoke(
-        COMMAND_ACTION.MODIFY_CONFIG,
-        contents,
-        credentials
-      ) as Promise<Tunnelbear.ModifyConfigResponse>;
-    },
-    []
-  );
+  const { executeSudoCommand } = useCommandIpcEvent();
 
   const disconnectOpenVpn = useCallback(
     () => executeSudoCommand(COMMANDS.KILL_OPVPN_PIDS),
@@ -29,54 +14,15 @@ const useOpenVpn = () => {
   );
 
   const connectOpenVpn = useCallback(
-    async (dirPath: string, originalContents: string[]) => {
-      const appDataPath = await getAppDataPath();
+    async (dirPath: string, contents: string[]) => {
       const credentials = JSON.parse(store.get(CREDENTIALS.CREDENTIALS, {}));
-      const { results, contents } = await modifyConfig(
-        originalContents,
-        credentials
-      );
 
-      await Promise.all(
-        _.compact([
-          !_.isEmpty(results.credentials) &&
-            writeFile(
-              `${appDataPath}/credentials.conf`,
-              [credentials.username, credentials.password].join('\n')
-            ),
-          results.caCertificate &&
-            copy(
-              `${dirPath}/CACertificate.crt`,
-              `${appDataPath}/CACertificate.crt`
-            ),
-          results.userCertificate &&
-            copy(
-              `${dirPath}/UserCertificate.crt`,
-              `${appDataPath}/UserCertificate.crt`
-            ),
-          results.userCertificate &&
-            copy(`${dirPath}/PrivateKey.key`, `${appDataPath}/PrivateKey.key`),
-          writeFile(`${appDataPath}/config.ovpn`, contents.join('\n')),
-        ])
-      );
-
-      const openVpnPids: string[] = [];
-
-      try {
-        openVpnPids.concat(
-          (
-            (await executeCommand(COMMANDS.GET_OVPN_PIDS)).stdout as string
-          ).split('\n')
-        );
-      } catch {}
-
-      const commands = [`cd ${appDataPath}`, COMMANDS.START_VPN];
-
-      if (openVpnPids.length) commands.unshift(COMMANDS.KILL_OPVPN_PIDS);
-
-      try {
-        await executeSudoCommand(commands.join(' && '));
-      } catch {}
+      return window.ipcRenderer.invoke(
+        OPEN_VPN.CONNECT_VPN,
+        dirPath,
+        credentials,
+        contents
+      ) as Promise<void>;
     },
     []
   );
