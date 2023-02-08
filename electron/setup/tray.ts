@@ -8,6 +8,8 @@ import {
 import { appState } from '../main';
 
 export const setTray = async (mainWindow: BrowserWindow) => {
+  if (appState.tray) return mainWindow.hide();
+
   const isPackaged = app.isPackaged;
   const iconPath = isPackaged
     ? path.join(
@@ -31,11 +33,25 @@ export const setTray = async (mainWindow: BrowserWindow) => {
     },
     {
       label: 'Show App',
-      click: () => mainWindow.show(),
+      click: () => {
+        if (appState.tray) {
+          appState.tray.destroy();
+          appState.tray = null;
+        }
+
+        mainWindow.show();
+      },
     },
     {
       label: !isConnected ? 'Connect' : 'Disconnect',
-      click: () => (!isConnected ? connectToLastConnection() : disconnectAll()),
+      click: () => {
+        if (isConnected) {
+          disconnectAll();
+          return;
+        }
+
+        connectToLastConnection();
+      },
     },
     {
       label: 'Quit',
