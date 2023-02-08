@@ -17,11 +17,6 @@
       to: 'files',
       filter: ['**/*'],
     },
-    {
-      from: 'node_modules/yarn',
-      to: 'files/yarn',
-      filter: ['**/*'],
-    },
   ],
   win: {
     target: [

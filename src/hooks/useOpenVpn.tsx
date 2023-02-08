@@ -1,17 +1,13 @@
 import _ from 'lodash';
 import { useCallback } from 'react';
 import store from 'store';
-import { COMMANDS, CREDENTIALS } from '../utils/constant';
+import { CREDENTIALS } from '../utils/constant';
 import { OPEN_VPN } from '../utils/enums/ipc.openvpn';
-import useCommandIpcEvent from './useCommandIpcEvent';
 
 const useOpenVpn = () => {
-  const { executeSudoCommand } = useCommandIpcEvent();
-
-  const disconnectOpenVpn = useCallback(
-    () => executeSudoCommand(COMMANDS.KILL_OPVPN_PIDS),
-    []
-  );
+  const disconnectOpenVpn = useCallback(() => {
+    return window.ipcRenderer.invoke(OPEN_VPN.DISCONNECT_VPN);
+  }, []);
 
   const connectOpenVpn = useCallback(
     async (dirPath: string, contents: string[]) => {

@@ -1,17 +1,18 @@
-import { Button, ButtonProps, Flex, GridItem, Text } from '@chakra-ui/react';
+import { Box, BoxProps, Button, Flex, GridItem, Text } from '@chakra-ui/react';
 import React, { createRef, useMemo, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import useOnHover from '../hooks/useOnHover';
 import useOpenVpn from '../hooks/useOpenVpn';
 import useReadWriteIpcEvent from '../hooks/useReadWriteIpcEvent';
+import useStorage from '../hooks/useStorage';
 import Storage from '../utils/Storage';
 
 const VpnCard: React.FC<Props> = ({ config, ...props }) => {
   const { readFile } = useReadWriteIpcEvent();
-  const { connectOpenVpn, disconnectOpenVpn } = useOpenVpn();
+  const { connectOpenVpn } = useOpenVpn();
   const [isOnHover, setIsOnHover] = useState(false);
-  const [, setRefresher] = useState(false);
-  const cardRef = createRef<HTMLButtonElement>();
+  const { deleteStorage } = useStorage();
+  const cardRef = createRef<HTMLDivElement>();
 
   useOnHover(
     cardRef,
@@ -47,11 +48,8 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
     return connectOpenVpn(dirPath, contents);
   };
 
-  const onClickOnCross = () => {
-    Storage.instance.delete(configName);
-
-    setRefresher((prev) => !prev);
-  };
+  const onClickOnCross = () =>
+    deleteStorage(config.name.replace(/.ovpn/g, '').replace(/.txt/g, ''));
 
   return (
     <GridItem>
@@ -61,7 +59,7 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
         alignItems={'center'}
         position={'relative'}
       >
-        <Button
+        <Box
           {...props}
           width={'20rem'}
           height={'10rem'}
@@ -104,7 +102,7 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
           >
             <IoMdClose />
           </Button>
-        </Button>
+        </Box>
         <Text
           position={'absolute'}
           translateX={'-50%'}
@@ -113,6 +111,7 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
           pointerEvents={'none'}
           fontWeight={'bold'}
           textTransform={'uppercase'}
+          userSelect={'none'}
         >
           {configName}
         </Text>
@@ -121,7 +120,7 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
   );
 };
 
-type Props = Omit<ButtonProps, 'width' | 'height'> & {
+type Props = Omit<BoxProps, 'width' | 'height'> & {
   config: Tunnelbear.VpnConfig;
 };
 

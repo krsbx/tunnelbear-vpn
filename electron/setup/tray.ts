@@ -1,10 +1,25 @@
-import { BrowserWindow, clipboard, Menu, Tray } from 'electron';
-import { connectToLastConnection, disconnectAll } from '../../src/utils/common';
-import type Tunnelbear from '../../types/tunnelbear';
+import { app, BrowserWindow, Menu, Tray } from 'electron';
+import path from 'path';
+import {
+  connectToLastConnection,
+  disconnectAll,
+  getConnectionStatus,
+} from '../../src/utils/common';
 import { appState } from '../main';
 
-const setTray = (mainWindow: BrowserWindow) => {
-  appState.tray = new Tray(clipboard.readImage());
+export const setTray = async (mainWindow: BrowserWindow) => {
+  const isPackaged = app.isPackaged;
+  const iconPath = isPackaged
+    ? path.join(
+        path.parse(path.resolve(app.getPath('exe'))).dir,
+        'files/icon.png'
+      )
+    : path.join(app.getAppPath(), 'electron/files/icon.png');
+
+  appState.tray = new Tray(iconPath);
+
+  const openVpnPids = await getConnectionStatus();
+  const isConnected = openVpnPids.length && openVpnPids.length > 0;
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -19,12 +34,8 @@ const setTray = (mainWindow: BrowserWindow) => {
       click: () => mainWindow.show(),
     },
     {
-      label: 'Connect',
-      click: () => connectToLastConnection(),
-    },
-    {
-      label: 'Disconnect',
-      click: () => disconnectAll(),
+      label: !isConnected ? 'Connect' : 'Disconnect',
+      click: () => (!isConnected ? connectToLastConnection() : disconnectAll()),
     },
     {
       label: 'Quit',

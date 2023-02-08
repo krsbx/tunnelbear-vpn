@@ -14,6 +14,10 @@ const useWindowActionIpcEvent = () => {
     window.ipcRenderer.invoke(WINDOW_ACTION.RESIZE);
   }, []);
 
+  const closeWindow = useCallback(() => {
+    window.ipcRenderer.invoke(WINDOW_ACTION.EXIT);
+  }, []);
+
   const closeApp = useCallback(() => {
     window.ipcRenderer.invoke(WINDOW_ACTION.QUIT);
   }, []);
@@ -22,6 +26,7 @@ const useWindowActionIpcEvent = () => {
     maximizeWindow,
     minimizeWindow,
     resizeWindow,
+    closeWindow,
     closeApp,
   };
 };
