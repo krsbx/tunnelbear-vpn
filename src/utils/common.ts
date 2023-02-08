@@ -72,6 +72,12 @@ export const modifyContent = (contents: string[], credentials: unknown) => {
 
   if (userCertIndex !== -1) contents.splice(userCertIndex, 1);
 
+  const keyIndex = contents.findIndex((str) =>
+    str.includes('key PrivateKey.key')
+  );
+
+  if (keyIndex !== -1) contents.splice(keyIndex, 1);
+
   return {
     results,
     contents,
