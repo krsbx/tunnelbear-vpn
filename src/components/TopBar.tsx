@@ -6,7 +6,8 @@ import useConfigImporter from '../hooks/useConfigImporter';
 import useWindowActionIpcEvent from '../hooks/useWindowActionIpcEvent';
 
 const TopBar: React.FC<Props> = ({ onOpen }) => {
-  const { closeApp, minimizeWindow, resizeWindow } = useWindowActionIpcEvent();
+  const { closeWindow, minimizeWindow, resizeWindow } =
+    useWindowActionIpcEvent();
   const importConfig = useConfigImporter();
 
   return (
@@ -67,7 +68,7 @@ const TopBar: React.FC<Props> = ({ onOpen }) => {
           height={'30px'}
           width={'30px'}
           minWidth={0}
-          onClick={closeApp}
+          onClick={closeWindow}
           autoFocus={false}
         >
           <IoMdClose />

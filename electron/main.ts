@@ -1,12 +1,13 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import _ from 'lodash';
 import { release } from 'os';
 import { join } from 'path';
-import { OPEN_VPN } from '../src/utils/enums/ipc.openvpn';
+import { disconnectAll, getConnectionStatus } from '../src/utils/common';
 import type { AppState } from '../types/tunnelbear';
 import './ipc';
-import { setupWindowAction } from './ipc/window';
-import { setupTray } from './main/setup';
+import { setupVpn } from './setup/openvpn';
+import { setupTray } from './setup/tray';
+import { setupWindowAction } from './setup/window';
 
 export const appState: AppState = {
   tray: null,
@@ -104,9 +105,17 @@ app.on('activate', () => {
   }
 });
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   const mainWindow = BrowserWindow.getAllWindows()[0];
 
   setupWindowAction(mainWindow);
   setupTray(mainWindow);
+  setupVpn(mainWindow);
+
+  const openVpnPids = await getConnectionStatus();
+  const isConnected = openVpnPids.length && openVpnPids.length > 0;
+
+  if (!isConnected) return;
+
+  disconnectAll();
 });

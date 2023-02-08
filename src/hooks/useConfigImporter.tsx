@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import Storage from '../utils/Storage';
 import useDialogIpcEvent from './useDialogIpcEvent';
+import useStorage from './useStorage';
 
 const useConfigImporter = () => {
-  const [, setRefresher] = useState(false);
+  const { setStorage } = useStorage();
   const { showOpenDialog } = useDialogIpcEvent();
 
   const importConfig = async () => {
@@ -20,13 +19,11 @@ const useConfigImporter = () => {
 
       const fileNameNoExt = fileName.replace(/.ovpn/g, '').replace(/.txt/g, '');
 
-      Storage.instance.set(fileNameNoExt ?? fileName, {
+      setStorage(fileNameNoExt ?? fileName, {
         name: fileName,
         path: filePath,
       });
     });
-
-    setRefresher((prev) => !prev);
   };
 
   return importConfig;
