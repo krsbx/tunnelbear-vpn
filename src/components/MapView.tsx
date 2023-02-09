@@ -40,7 +40,9 @@ const MapView = () => {
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'}
+          url={
+            'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}'
+          }
         />
         {_.map(vpns, (config, key) => {
           const countryData = LAT_LNG.find(({ country }) =>

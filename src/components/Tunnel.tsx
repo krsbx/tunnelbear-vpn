@@ -4,6 +4,7 @@ import { Marker } from 'react-leaflet';
 import useConfigData from '../hooks/useConfigData';
 import useOpenVpn from '../hooks/useOpenVpn';
 import useReadWriteIpcEvent from '../hooks/useReadWriteIpcEvent';
+import { TunnelIcon } from './Marker';
 
 const Tunnel: React.FC<Props> = ({ config, mapRef, position }) => {
   const { dirPath } = useConfigData(config);
@@ -26,6 +27,7 @@ const Tunnel: React.FC<Props> = ({ config, mapRef, position }) => {
   return (
     <Marker
       position={position}
+      icon={TunnelIcon}
       eventHandlers={{
         click: onClick,
       }}
