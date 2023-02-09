@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { useCallback } from 'react';
 import store from 'store';
-import crypto from '../crypto';
 import { CREDENTIALS } from '../utils/constant';
 import { OPEN_VPN } from '../utils/enums/ipc.openvpn';
 
@@ -24,8 +23,8 @@ const useOpenVpn = () => {
         OPEN_VPN.CONNECT_VPN,
         dirPath,
         {
-          username: crypto.decrypt(credentials.username),
-          password: crypto.decrypt(credentials.password),
+          username: window.decrypt(credentials.username),
+          password: window.decrypt(credentials.password),
         },
         contents
       ) as Promise<void>;
