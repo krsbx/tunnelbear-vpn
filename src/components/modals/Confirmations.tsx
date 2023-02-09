@@ -19,7 +19,6 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import store from 'store';
-import crypto from '../../crypto';
 import { CREDENTIALS } from '../../utils/constant';
 import { passwordSchema } from '../../utils/schema';
 import Form from '../Form';
@@ -46,7 +45,7 @@ const Confirmations = ({ isOpen, onClose, onOpen }: Props) => {
       return;
     }
 
-    if (password !== crypto.decrypt(values.password)) return;
+    if (window.decrypt(password) !== values.password) return;
 
     reset();
     onOpen();

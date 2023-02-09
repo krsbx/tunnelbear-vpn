@@ -10,7 +10,15 @@ const StatusBar = () => {
   } = useAppContext();
 
   return (
-    <Flex justifyContent={'center'} alignItems={'center'} gap={3}>
+    <Flex
+      justifyContent={'center'}
+      alignItems={'center'}
+      gap={3}
+      position={'absolute'}
+      top={'65px'}
+      left={'50px'}
+      zIndex={999}
+    >
       <Switch
         isChecked={isConnected}
         disabled={isProcessing}

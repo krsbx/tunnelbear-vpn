@@ -1,13 +1,14 @@
 import { Box, BoxProps, Button, Flex, GridItem, Text } from '@chakra-ui/react';
 import React, { createRef, useMemo, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
+import useConfigData from '../hooks/useConfigData';
 import useOnHover from '../hooks/useOnHover';
 import useOpenVpn from '../hooks/useOpenVpn';
 import useReadWriteIpcEvent from '../hooks/useReadWriteIpcEvent';
 import useStorage from '../hooks/useStorage';
-import Storage from '../utils/Storage';
 
 const VpnCard: React.FC<Props> = ({ config, ...props }) => {
+  const { configImagePath, configName, dirPath } = useConfigData(config);
   const { readFile } = useReadWriteIpcEvent();
   const { connectOpenVpn } = useOpenVpn();
   const [isOnHover, setIsOnHover] = useState(false);
@@ -19,28 +20,6 @@ const VpnCard: React.FC<Props> = ({ config, ...props }) => {
     () => setIsOnHover(true),
     () => setIsOnHover(false)
   );
-
-  const { configName, configImagePath, dirPath } = useMemo(() => {
-    const names = config.name.replace(/.ovpn/g, '').replace(/.txt/g, '');
-
-    const configName = names.replace(/TunnelBear /g, '');
-    const configImagePath = `./images/flags/${configName.replace(
-      / /g,
-      ''
-    )}.svg`;
-
-    const paths = config.path.split('/');
-
-    paths.pop();
-
-    const dirPath = paths.join('/');
-
-    return {
-      configName,
-      configImagePath,
-      dirPath,
-    };
-  }, [config.name, config.path]);
 
   const onClickOnCard = async () => {
     const contents = (await readFile(config.path)).split('\n');

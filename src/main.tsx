@@ -1,4 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet/dist/leaflet.js';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import AppProvider from './provider/AppProvider';

@@ -20,7 +20,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import store from 'store';
-import crypto from '../../crypto';
 import { CREDENTIALS } from '../../utils/constant';
 import { credentialSchema } from '../../utils/schema';
 import Form from '../Form';
@@ -70,8 +69,8 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
     store.set(
       CREDENTIALS.CREDENTIALS,
       JSON.stringify({
-        username: crypto.encrypt(values.username),
-        password: crypto.encrypt(values.password),
+        username: window.encrypt(values.username),
+        password: window.encrypt(values.password),
       })
     );
 
@@ -90,7 +89,7 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
     if (credentials) {
       const username = JSON.parse(credentials)?.username;
 
-      if (username) setValue('username', crypto.decrypt(username));
+      if (username) setValue('username', window.decrypt(username));
     }
 
     onCredentialOpen();
@@ -109,7 +108,7 @@ const Credentials = ({ isOpen, onClose: onCloseFromProps }: Props) => {
     if (credentials) {
       const username = JSON.parse(credentials)?.username;
 
-      if (username) setValue('username', crypto.decrypt(username));
+      if (username) setValue('username', window.decrypt(username));
     }
 
     onCredentialOpen();

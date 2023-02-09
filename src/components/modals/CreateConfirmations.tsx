@@ -19,7 +19,6 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import store from 'store';
-import crypto from '../../crypto';
 import { CREDENTIALS } from '../../utils/constant';
 import { passwordSchema } from '../../utils/schema';
 import Form from '../Form';
@@ -37,7 +36,7 @@ const CreateConfirmations = ({ isOpen, onClose }: Props) => {
   });
 
   const onSubmit = (values: Tunnelbear.Schema['Password']) => {
-    store.set(CREDENTIALS.CONFIRMATION, crypto.encrypt(values.password));
+    store.set(CREDENTIALS.CONFIRMATION, window.encrypt(values.password));
 
     reset();
 
