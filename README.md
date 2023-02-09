@@ -13,12 +13,23 @@
 ## Table of contents
 
 - <a href="#about">What is Tunnelbear VPN?</a>
+- <a href="#breaking-changes">Breaking Changes</a>
 - <a href="#how-to">How to use</a>
 - <a href="#contributors">Contributors</a>
 
 <h2 id="about">What is Tunnelbear VPN?</h2>
 
 "_Tunnelbear VPN_" is a public VPN service based on Toronto, Canada. Sadly, it only support Windows, Mac, Android, and iOS which led to no _client app_ for GNU/Linux users. This project is solving that issue by creating a simple client that user can import which VPN config they want to use.
+
+<h2 id="breaking-changes">Breaking Changes</h2>
+
+- Starting from "_v1.1.0_" user credentials now are encrypted using `aes-js` therefore, anyone who use any version before "_v1.1.0_" recommended to remove their localstorage data by purging the installations.
+
+  > Purging the installation can be done by using this command (the examples are ubuntu base only)
+
+  ```bash
+  sudo apt purge tunnelbear-vpn
+  ```
 
 <h2 id="how-to">How to use</h2>
 
