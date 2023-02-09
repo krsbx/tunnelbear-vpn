@@ -159,6 +159,10 @@ export const LAT_LNG: Tunnelbear.CountryLatLng[] = [
     position: [-9.189967, -75.015152],
   },
   {
+    country: 'Philippines',
+    position: [12.879721, 121.774017],
+  },
+  {
     country: 'Poland',
     position: [51.919438, 19.145136],
   },

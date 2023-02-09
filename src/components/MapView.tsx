@@ -32,6 +32,10 @@ const MapView = () => {
           height: '100%',
         }}
         attributionControl={false}
+        maxBounds={[
+          [81.427274, -173.201662],
+          [-84.136577, 178.66761],
+        ]}
         ref={mapRef}
       >
         <TileLayer
