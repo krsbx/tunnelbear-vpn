@@ -85,11 +85,13 @@ export const setupVpn = (mainWindow: BrowserWindow) => {
       appState.isProcessing = true;
       sendAppState();
 
-      await connectToLastConnection();
+      connectToLastConnection();
 
-      appState.isConnected = true;
-      appState.isProcessing = false;
-      sendAppState();
+      setTimeout(() => {
+        appState.isProcessing = false;
+        appState.isConnected = true;
+        sendAppState();
+      }, 5000);
     } catch {
       appState.isProcessing = false;
       sendAppState();

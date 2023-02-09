@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, Tray } from 'electron';
+import { app, BrowserWindow, Menu, shell, Tray } from 'electron';
 import path from 'path';
 import {
   connectToLastConnection,
@@ -8,8 +8,6 @@ import {
 import { appState } from '../main';
 
 export const setTray = async (mainWindow: BrowserWindow) => {
-  if (appState.tray) return mainWindow.hide();
-
   const isPackaged = app.isPackaged;
   const iconPath = isPackaged
     ? path.join(
@@ -18,7 +16,7 @@ export const setTray = async (mainWindow: BrowserWindow) => {
       )
     : path.join(app.getAppPath(), 'electron/files/icon.png');
 
-  appState.tray = new Tray(iconPath);
+  if (!appState.tray) appState.tray = new Tray(iconPath);
 
   const openVpnPids = await getConnectionStatus();
   const isConnected = openVpnPids.length && openVpnPids.length > 0;
@@ -33,14 +31,7 @@ export const setTray = async (mainWindow: BrowserWindow) => {
     },
     {
       label: 'Show App',
-      click: () => {
-        if (appState.tray) {
-          appState.tray.destroy();
-          appState.tray = null;
-        }
-
-        mainWindow.show();
-      },
+      click: () => mainWindow.show(),
     },
     {
       label: !isConnected ? 'Connect' : 'Disconnect',
@@ -52,6 +43,21 @@ export const setTray = async (mainWindow: BrowserWindow) => {
 
         connectToLastConnection();
       },
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: 'Report App Issue',
+      click: () =>
+        shell.openExternal('https://github.com/krsbx/tunnelbear-vpn/issues'),
+    },
+    {
+      label: 'Report Tunnelbear Issue',
+      click: () => shell.openExternal('https://help.tunnelbear.com/hc/en-us'),
+    },
+    {
+      type: 'separator',
     },
     {
       label: 'Quit',
@@ -75,8 +81,11 @@ export const setupTray = (mainWindow: BrowserWindow) => {
     setTray(mainWindow);
   });
 
-  mainWindow.on('restore', () => {
-    if (!appState.tray) return;
+  mainWindow.on('restore', async () => {
+    const openVpnPids = await getConnectionStatus();
+    const isConnected = openVpnPids.length && openVpnPids.length > 0;
+
+    if (!appState.tray || isConnected) return;
 
     appState.tray.destroy();
     appState.tray = null;
