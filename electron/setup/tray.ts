@@ -1,21 +1,13 @@
-import { app, BrowserWindow, Menu, shell, Tray } from 'electron';
-import path from 'path';
+import { BrowserWindow, Menu, shell, Tray } from 'electron';
 import {
   connectToLastConnection,
   disconnectAll,
   getConnectionStatus,
 } from '../../src/utils/common';
 import { appState } from '../main';
+import { iconPath } from './constant';
 
 export const setTray = async (mainWindow: BrowserWindow) => {
-  const isPackaged = app.isPackaged;
-  const iconPath = isPackaged
-    ? path.join(
-        path.parse(path.resolve(app.getPath('exe'))).dir,
-        'files/icon.png'
-      )
-    : path.join(app.getAppPath(), 'electron/files/icon.png');
-
   if (!appState.tray) appState.tray = new Tray(iconPath);
 
   const openVpnPids = await getConnectionStatus();

@@ -1,18 +1,15 @@
-import { BrowserWindow, ipcMain } from 'electron';
-import fs from 'fs-extra';
+import { BrowserWindow, ipcMain, Notification } from 'electron';
 import _ from 'lodash';
 import {
   connectToLastConnection,
   disconnectAll,
-  executeSudoCommand,
-  getAppDataPath,
-  getConnectionStatus,
   modifyContent,
+  writeConfigFiles,
 } from '../../src/utils/common';
-import { COMMANDS } from '../../src/utils/constant';
 import { OPEN_VPN } from '../../src/utils/enums/ipc.openvpn';
 import Tunnelbear from '../../types/tunnelbear';
 import { appState } from '../main';
+import { iconPath } from './constant';
 import { setTray } from './tray';
 
 export const setupVpn = (mainWindow: BrowserWindow) => {
@@ -33,43 +30,31 @@ export const setupVpn = (mainWindow: BrowserWindow) => {
       appState.isProcessing = true;
       sendAppState();
 
-      const appDataPath = getAppDataPath();
       const { results } = modifyContent(contents, credentials);
 
-      await Promise.all(
-        _.compact([
-          !_.isEmpty(results.credentials) &&
-            fs.writeFile(
-              `${appDataPath}/credentials.conf`,
-              [credentials.username, credentials.password].join('\n')
-            ),
-          results.caCertificate &&
-            fs.copy(
-              `${dirPath}/CACertificate.crt`,
-              `${appDataPath}/CACertificate.crt`
-            ),
-          fs.writeFile(`${appDataPath}/config.ovpn`, contents.join('\n')),
-        ])
+      await writeConfigFiles(
+        {
+          contents,
+          results,
+        },
+        dirPath
       );
 
-      const openVpnPids: string[] = await getConnectionStatus();
-
-      const commands = [`cd ${appDataPath}`, COMMANDS.START_VPN];
-
-      if (openVpnPids.length) {
-        commands.unshift(COMMANDS.KILL_OPVPN_PIDS);
-
-        console.log('Some OpenVPN process detected');
-        console.log('Removing it before connecting...');
-      }
-
       try {
-        executeSudoCommand(commands.join(' && '));
+        connectToLastConnection();
 
         setTimeout(() => {
           appState.isProcessing = false;
           appState.isConnected = true;
           sendAppState();
+
+          const notification = new Notification({
+            title: 'Connected',
+            body: 'Connected to selected server, you are protected by the bear',
+            icon: iconPath,
+          });
+
+          notification.show();
 
           setTray(mainWindow);
         }, 5000);
@@ -91,6 +76,14 @@ export const setupVpn = (mainWindow: BrowserWindow) => {
         appState.isProcessing = false;
         appState.isConnected = true;
         sendAppState();
+
+        const notification = new Notification({
+          title: 'Connected',
+          body: 'Connected to last connection, you are protected by the bear',
+          icon: iconPath,
+        });
+
+        notification.show();
       }, 5000);
     } catch {
       appState.isProcessing = false;
@@ -108,6 +101,14 @@ export const setupVpn = (mainWindow: BrowserWindow) => {
       appState.isConnected = true;
       appState.isProcessing = false;
       sendAppState();
+
+      const notification = new Notification({
+        title: 'Disconnected',
+        body: 'Disconnected, you are not protected by the bear',
+        icon: iconPath,
+      });
+
+      notification.show();
     } catch {
       appState.isProcessing = false;
       sendAppState();

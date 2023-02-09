@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { app } from 'electron';
-import fs from 'fs';
+import fs from 'fs-extra';
 import _ from 'lodash';
 import os from 'os';
 import path from 'path';
@@ -125,4 +125,31 @@ export const disconnectAll = async () => {
   if (!openVpnPids.length) return;
 
   executeSudoCommand(COMMANDS.KILL_OPVPN_PIDS);
+};
+
+export const writeConfigFiles = (
+  response: Tunnelbear.ModifyConfigResponse,
+  dirPath: string
+) => {
+  const { contents, results } = response;
+
+  const appDataPath = getAppDataPath();
+
+  return Promise.all(
+    _.compact([
+      !_.isEmpty(results.credentials) &&
+        fs.writeFile(
+          `${appDataPath}/credentials.conf`,
+          [results.credentials.username, results.credentials.password].join(
+            '\n'
+          )
+        ),
+      results.caCertificate &&
+        fs.copy(
+          `${dirPath}/CACertificate.crt`,
+          `${appDataPath}/CACertificate.crt`
+        ),
+      fs.writeFile(`${appDataPath}/config.ovpn`, contents.join('\n')),
+    ])
+  );
 };
