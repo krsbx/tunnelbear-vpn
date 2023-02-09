@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { useCallback } from 'react';
 import store from 'store';
+import crypto from '../crypto';
 import { CREDENTIALS } from '../utils/constant';
 import { OPEN_VPN } from '../utils/enums/ipc.openvpn';
 
@@ -9,14 +10,23 @@ const useOpenVpn = () => {
     return window.ipcRenderer.invoke(OPEN_VPN.DISCONNECT_VPN);
   }, []);
 
+  const connectOpenVpnLastConnection = useCallback(() => {
+    return window.ipcRenderer.invoke(OPEN_VPN.CONNECT_TO_LAST);
+  }, []);
+
   const connectOpenVpn = useCallback(
     async (dirPath: string, contents: string[]) => {
-      const credentials = JSON.parse(store.get(CREDENTIALS.CREDENTIALS, {}));
+      const credentials: Tunnelbear.Schema['Credential'] = JSON.parse(
+        store.get(CREDENTIALS.CREDENTIALS, {})
+      );
 
       return window.ipcRenderer.invoke(
         OPEN_VPN.CONNECT_VPN,
         dirPath,
-        credentials,
+        {
+          username: crypto.decrypt(credentials.username),
+          password: crypto.decrypt(credentials.password),
+        },
         contents
       ) as Promise<void>;
     },
@@ -25,6 +35,7 @@ const useOpenVpn = () => {
 
   return {
     connectOpenVpn,
+    connectOpenVpnLastConnection,
     disconnectOpenVpn,
   };
 };

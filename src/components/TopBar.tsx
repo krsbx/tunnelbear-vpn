@@ -18,6 +18,8 @@ const TopBar: React.FC<Props> = ({ onOpen }) => {
       id={'custom-topbar'}
       position={'relative'}
       backgroundColor={'gray.900'}
+      py={2}
+      px={2}
     >
       <Stack direction={'row'} spacing={3}>
         <Button
@@ -39,7 +41,7 @@ const TopBar: React.FC<Props> = ({ onOpen }) => {
           Configure Auth
         </Button>
       </Stack>
-      <Text position={'absolute'} left={'46.7%'} top={'15%'} fontWeight={'700'}>
+      <Text position={'absolute'} left={'46.7%'} top={'25%'} fontWeight={'700'}>
         Tunnelbear VPN
       </Text>
       <Stack direction={'row'} spacing={3}>
